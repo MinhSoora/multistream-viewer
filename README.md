@@ -1,5 +1,5 @@
 # 🎮 Multi-Stream Viewer
-
+Ma : 10351035@
 > Xem nhiều livestream cùng lúc - Lấy cảm hứng từ tubbo.events và MCSR Ranked Events
 
 Một công cụ đơn giản để xem tối đa 9 livestream đồng thời từ Twitch, YouTube và Kick. Hoàn hảo cho việc theo dõi các sự kiện gaming, tournament, hoặc bất kỳ nội dung nào bạn muốn xem cùng lúc.
