@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Stream Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stream-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stream-input {
+            position: relative;
+        }
+
+        .stream-input input {
+            padding-right: 40px;
+        }
+
+        .stream-input .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .stream-input input:not(:placeholder-shown) + .clear-btn {
+            display: block;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .generated-link {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .generated-link.show {
+            display: block;
+        }
+
+        .generated-link input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .copy-btn {
+            background: #10ac84;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: #0e9670;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 1.1em;
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* Viewer Page Styles */
+        .viewer-container {
+            padding: 20px;
+        }
+
+        .streams-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .streams-grid.grid-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .streams-grid.grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .streams-grid.grid-3,
+        .streams-grid.grid-4,
+        .streams-grid.grid-5,
+        .streams-grid.grid-6 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .streams-grid.grid-7,
+        .streams-grid.grid-8,
+        .streams-grid.grid-9 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .stream-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            aspect-ratio: 16/9;
+            position: relative;
+        }
+
+        .stream-container iframe {
+            width: 100%;
+            height: 100%;
+        }
+
+        .stream-offline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2d3436;
+            color: white;
+            font-size: 1.2em;
+            height: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .streams-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Multi-Stream Viewer</h1>
+            <p>Xem tối đa 9 livestream cùng lúc</p>
+        </div>
+
+        <div id="indexPage" class="card">
+            <h2 style="margin-bottom: 20px;">Thêm Link Stream</h2>
+            
+            <div class="stream-inputs" id="streamInputs">
+                <!-- Stream inputs will be generated here -->
+            </div>
+
+            <button class="btn" onclick="generateLink()">🔗 Tạo Link Xem</button>
+
+            <div class="generated-link" id="generatedLink">
+                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Link xem của bạn:</label>
+                <input type="text" id="viewerLink" readonly>
+                <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+            </div>
+        </div>
+
+        <div id="viewerPage" style="display: none;">
+            <div class="card">
+                <h2 style="margin-bottom: 20px;">Đang xem livestream</h2>
+                <div id="streamsGrid" class="streams-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        By MinhSoora
+    </div>
+
+    <script>
+        // Generate 9 stream inputs
+        const streamInputsContainer = document.getElementById('streamInputs');
+        for (let i = 1; i <= 9; i++) {
+            const div = document.createElement('div');
+            div.className = 'stream-input';
+            div.innerHTML = `
+                <input type="text" id="stream${i}" placeholder="Stream ${i} (Twitch/YouTube/Kick URL)">
+                <button class="clear-btn" onclick="clearInput(${i})">×</button>
+            `;
+            streamInputsContainer.appendChild(div);
+        }
+
+        function clearInput(num) {
+            document.getElementById(`stream${num}`).value = '';
+        }
+
+        function extractStreamInfo(url) {
+            if (!url) return null;
+
+            // Twitch
+            if (url.includes('twitch.tv')) {
+                const match = url.match(/twitch\.tv\/([^\/\?]+)/);
+                if (match) return { platform: 'twitch', channel: match[1] };
+            }
+
+            // YouTube
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                let videoId = null;
+                if (url.includes('watch?v=')) {
+                    videoId = url.split('watch?v=')[1].split('&')[0];
+                } else if (url.includes('youtu.be/')) {
+                    videoId = url.split('youtu.be/')[1].split('?')[0];
+                } else if (url.includes('/live/')) {
+                    videoId = url.split('/live/')[1].split('?')[0];
+                }
+                if (videoId) return { platform: 'youtube', videoId: videoId };
+            }
+
+            // Kick
+            if (url.includes('kick.com')) {
+                const match = url.match(/kick\.com\/([^\/\?]+)/);
+                if (match) return { platform: 'kick', channel: match[1] };
+            }
+
+            return null;
+        }
+
+        function generateLink() {
+            const streams = [];
+            for (let i = 1; i <= 9; i++) {
+                const url = document.getElementById(`stream${i}`).value.trim();
+                const info = extractStreamInfo(url);
+                if (info) {
+                    streams.push(info);
+                }
+            }
+
+            if (streams.length === 0) {
+                alert('Vui lòng nhập ít nhất 1 link stream!');
+                return;
+            }
+
+            const encodedData = btoa(JSON.stringify(streams));
+            const viewerUrl = `${window.location.origin}${window.location.pathname}?streams=${encodedData}`;
+            
+            document.getElementById('viewerLink').value = viewerUrl;
+            document.getElementById('generatedLink').classList.add('show');
+        }
+
+        function copyLink() {
+            const linkInput = document.getElementById('viewerLink');
+            linkInput.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Đã copy!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+
+        function createStreamEmbed(streamInfo) {
+            if (streamInfo.platform === 'twitch') {
+                return `<iframe src="https://player.twitch.tv/?channel=${streamInfo.channel}&parent=${window.location.hostname}&muted=true" frameborder="0" allowfullscreen></iframe>`;
+            } else if (streamInfo.platform === 'youtube') {
+                return `<iframe src="https://www.youtube.com/embed/${streamInfo.videoId}?autoplay=1&mute=1" frameborder="0" allowfullscreen></iframe>`;
+            } else if (streamInfo.platform === 'kick') {
+                return `<iframe src="https://player.kick.com/${streamInfo.channel}" frameborder="0" allowfullscreen></iframe>`;
+            }
+            return '<div class="stream-offline">Stream đang offline</div>';
+        }
+
+        // Check if we're in viewer mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const streamsParam = urlParams.get('streams');
+
+        if (streamsParam) {
+            // Viewer mode
+            document.getElementById('indexPage').style.display = 'none';
+            document.getElementById('viewerPage').style.display = 'block';
+
+            try {
+                const streams = JSON.parse(atob(streamsParam));
+                const grid = document.getElementById('streamsGrid');
+                grid.className = `streams-grid grid-${streams.length}`;
+
+                streams.forEach((stream, index) => {
+                    const container = document.createElement('div');
+                    container.className = 'stream-container';
+                    container.innerHTML = createStreamEmbed(stream);
+                    grid.appendChild(container);
+                });
+            } catch (e) {
+                document.getElementById('streamsGrid').innerHTML = '<p style="color: white;">Lỗi: Link không hợp lệ</p>';
+            }
+        }
+    </script>
+</body>
+</html>
