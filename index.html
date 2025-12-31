@@ -12,44 +12,51 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            color: #1a1a1a;
         }
 
         .container {
             flex: 1;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
             width: 100%;
         }
 
         .header {
             text-align: center;
-            color: white;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a1a1a;
         }
 
         .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
+            font-size: 1em;
+            color: #666;
         }
 
         .card {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.3em;
+            margin-bottom: 24px;
+            font-weight: 600;
         }
 
         .input-group {
@@ -59,29 +66,32 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: 500;
             color: #333;
+            font-size: 0.9em;
         }
 
         .input-group input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            background: #fafafa;
         }
 
         .input-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1a1a1a;
+            background: white;
         }
 
         .stream-inputs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .stream-input {
@@ -97,14 +107,16 @@
             right: 10px;
             top: 50%;
             transform: translateY(-50%);
-            background: #ff4757;
+            background: #1a1a1a;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 25px;
-            height: 25px;
+            width: 24px;
+            height: 24px;
             cursor: pointer;
             display: none;
+            font-size: 16px;
+            line-height: 1;
         }
 
         .stream-input input:not(:placeholder-shown) + .clear-btn {
@@ -112,31 +124,31 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
+            padding: 14px 32px;
+            font-size: 1em;
             border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            font-weight: 600;
+            transition: all 0.2s;
+            font-weight: 500;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #000;
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .generated-link {
-            margin-top: 20px;
+            margin-top: 24px;
             padding: 20px;
-            background: #f8f9fa;
+            background: #f9f9f9;
             border-radius: 8px;
+            border: 1px solid #e0e0e0;
             display: none;
         }
 
@@ -144,35 +156,46 @@
             display: block;
         }
 
+        .generated-link label {
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 0.9em;
+        }
+
         .generated-link input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #667eea;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 1em;
-            margin-bottom: 10px;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            background: white;
         }
 
         .copy-btn {
-            background: #10ac84;
-            color: white;
-            border: none;
-            padding: 10px 25px;
+            background: white;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+            padding: 10px 24px;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         .copy-btn:hover {
-            background: #0e9670;
+            background: #f5f5f5;
+            border-color: #1a1a1a;
         }
 
         .footer {
             text-align: center;
-            padding: 20px;
-            color: white;
-            font-size: 1.1em;
-            background: rgba(0,0,0,0.2);
+            padding: 24px;
+            color: #666;
+            font-size: 0.95em;
+            border-top: 1px solid #e0e0e0;
+            background: white;
         }
 
         /* Viewer Page Styles */
@@ -182,7 +205,7 @@
 
         .streams-grid {
             display: grid;
-            gap: 15px;
+            gap: 16px;
             margin-bottom: 20px;
         }
 
@@ -209,11 +232,12 @@
 
         .stream-container {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             aspect-ratio: 16/9;
             position: relative;
+            border: 1px solid #e0e0e0;
         }
 
         .stream-container iframe {
@@ -225,10 +249,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #2d3436;
+            background: #1a1a1a;
             color: white;
-            font-size: 1.2em;
+            font-size: 1.1em;
             height: 100%;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
@@ -237,7 +262,15 @@
             }
 
             .header h1 {
-                font-size: 1.8em;
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 20px 16px;
+            }
+
+            .card {
+                padding: 24px 20px;
             }
         }
     </style>
@@ -245,29 +278,29 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎮 Multi-Stream Viewer</h1>
+            <h1>Multi-Stream Viewer</h1>
             <p>Xem tối đa 9 livestream cùng lúc</p>
         </div>
 
         <div id="indexPage" class="card">
-            <h2 style="margin-bottom: 20px;">Thêm Link Stream</h2>
+            <h2>Thêm Link Stream</h2>
             
             <div class="stream-inputs" id="streamInputs">
                 <!-- Stream inputs will be generated here -->
             </div>
 
-            <button class="btn" onclick="generateLink()">🔗 Tạo Link Xem</button>
+            <button class="btn" onclick="generateLink()">Tạo Link Xem</button>
 
             <div class="generated-link" id="generatedLink">
-                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Link xem của bạn:</label>
+                <label>Link xem của bạn:</label>
                 <input type="text" id="viewerLink" readonly>
-                <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+                <button class="copy-btn" onclick="copyLink()">Copy Link</button>
             </div>
         </div>
 
         <div id="viewerPage" style="display: none;">
             <div class="card">
-                <h2 style="margin-bottom: 20px;">Đang xem livestream</h2>
+                <h2>Đang xem livestream</h2>
                 <div id="streamsGrid" class="streams-grid"></div>
             </div>
         </div>
@@ -392,9 +425,9 @@
                     grid.appendChild(container);
                 });
             } catch (e) {
-                document.getElementById('streamsGrid').innerHTML = '<p style="color: white;">Lỗi: Link không hợp lệ</p>';
+                document.getElementById('streamsGrid').innerHTML = '<p style="color: #666;">Lỗi: Link không hợp lệ</p>';
             }
         }
     </script>
 </body>
-</html>
+    </html>
