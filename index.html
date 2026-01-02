@@ -5,414 +5,669 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi-Stream Viewer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* styles.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f5f5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: #1a1a1a;
-        }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #1a1a1a;
+    transition: background 0.5s ease;
+}
 
-        body.custom-bg {
-            transition: background 0.3s;
-        }
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeOut 0.5s ease 2s forwards;
+}
 
-        body.gradient-bg {
-            animation: gradientShift 10s ease infinite;
-            background-size: 200% 200%;
-        }
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+.loading-content {
+    text-align: center;
+}
 
-        .container {
-            flex: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            width: 100%;
-        }
+.logo-container {
+    margin-bottom: 20px;
+    animation: bounce 1s ease infinite;
+}
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            transition: opacity 0.3s;
-        }
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
 
-        .header.hidden {
-            display: none;
-        }
+.logo {
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    animation: rotate 3s linear infinite;
+}
 
-        .header h1 {
-            font-size: 2em;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
-        .header p {
-            font-size: 1em;
-            color: #666;
-        }
+.loading-title {
+    color: white;
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
+.loading-bar {
+    width: 300px;
+    height: 4px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0 auto 15px;
+}
 
-        .card h2 {
-            font-size: 1.3em;
-            margin-bottom: 24px;
-            font-weight: 600;
-        }
+.loading-progress {
+    height: 100%;
+    background: white;
+    border-radius: 2px;
+    animation: loadingProgress 2s ease forwards;
+}
 
-        .input-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
+@keyframes loadingProgress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
 
-        .input-row input {
-            flex: 1;
-            padding: 12px 14px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 0.95em;
-            transition: all 0.2s;
-            background: #fafafa;
-        }
+.loading-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9em;
+}
 
-        .input-row input:focus {
-            outline: none;
-            border-color: #1a1a1a;
-            background: white;
-        }
+/* Gradient Backgrounds */
+body.gradient-twitch {
+    background: linear-gradient(135deg, #9147ff 0%, #6441a5 50%, #2c1a4d 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
 
-        .btn {
-            background: #1a1a1a;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 0.95em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-            white-space: nowrap;
-        }
+body.gradient-youtube {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 50%, #8b0000 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
 
-        .btn:hover {
-            background: #000;
-        }
+body.gradient-kick {
+    background: linear-gradient(135deg, #53fc18 0%, #00d85a 50%, #00a049 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
 
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.85em;
-        }
+body.gradient-custom {
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
 
-        .stream-list {
-            margin-bottom: 24px;
-        }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-        .stream-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid #e0e0e0;
-        }
+.container {
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+}
 
-        .stream-item-info {
-            flex: 1;
-            font-size: 0.9em;
-            color: #666;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    transition: opacity 0.3s;
+    animation: slideDown 0.5s ease;
+}
 
-        .stream-item-actions {
-            display: flex;
-            gap: 8px;
-        }
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        .btn-remove {
-            background: #ff4757;
-            padding: 6px 12px;
-            font-size: 0.85em;
-        }
+.header.hidden {
+    display: none;
+}
 
-        .btn-remove:hover {
-            background: #e63946;
-        }
+.logo-header {
+    display: inline-block;
+    margin-bottom: 10px;
+}
 
-        .settings-section {
-            border-top: 1px solid #e0e0e0;
-            padding-top: 24px;
-            margin-top: 24px;
-        }
+.logo-small {
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+}
 
-        .settings-section h3 {
-            font-size: 1.1em;
-            margin-bottom: 16px;
-            font-weight: 600;
-        }
+.header h1 {
+    font-size: 2em;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
 
-        .setting-group {
-            margin-bottom: 20px;
-        }
+.header p {
+    font-size: 1em;
+    color: #666;
+}
 
-        .setting-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 0.9em;
-            color: #333;
-        }
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    animation: fadeInUp 0.6s ease;
+}
 
-        .setting-group select,
-        .setting-group input[type="color"] {
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 0.95em;
-            background: #fafafa;
-        }
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        .setting-group select {
-            width: 100%;
-        }
+.card h2 {
+    font-size: 1.3em;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
 
-        .setting-group input[type="color"] {
-            width: 80px;
-            height: 40px;
-            cursor: pointer;
-        }
+.input-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
+.input-row input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95em;
+    transition: all 0.3s;
+    background: #fafafa;
+}
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
+.input-row input:focus {
+    outline: none;
+    border-color: #1a1a1a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(26,26,26,0.1);
+}
 
-        .color-inputs {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+.btn {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.95em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
 
-        .generated-link {
-            margin-top: 24px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            display: none;
-        }
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
 
-        .generated-link.show {
-            display: block;
-        }
+.btn:active {
+    transform: translateY(0);
+}
 
-        .generated-link label {
-            font-weight: 500;
-            margin-bottom: 10px;
-            display: block;
-            font-size: 0.9em;
-        }
+.btn-icon {
+    font-size: 1.1em;
+}
 
-        .generated-link input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 0.95em;
-            margin-bottom: 12px;
-            background: white;
-        }
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.85em;
+}
 
-        .copy-btn {
-            background: white;
-            color: #1a1a1a;
-            border: 1px solid #e0e0e0;
-            padding: 10px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
+.stream-list {
+    margin-bottom: 24px;
+    min-height: 60px;
+}
 
-        .copy-btn:hover {
-            background: #f5f5f5;
-            border-color: #1a1a1a;
-        }
+.stream-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+    animation: slideInRight 0.3s ease;
+}
 
-        .footer {
-            text-align: center;
-            padding: 24px;
-            color: #666;
-            font-size: 0.95em;
-            border-top: 1px solid #e0e0e0;
-            background: white;
-            transition: opacity 0.3s;
-        }
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 
-        .footer.hidden {
-            display: none;
-        }
+.stream-item:hover {
+    border-color: #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-        /* Viewer Styles */
-        .viewer-body {
-            margin: 0;
-            padding: 0;
-        }
+.stream-item-info {
+    flex: 1;
+    font-size: 0.9em;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
 
-        .streams-grid {
-            width: 100%;
-            height: 100vh;
-            display: grid;
-            gap: 0;
-            position: relative;
-        }
+.stream-item-actions {
+    display: flex;
+    gap: 8px;
+}
 
-        .layout-grid-1 { grid-template-columns: 1fr; }
-        .layout-grid-2 { grid-template-columns: repeat(2, 1fr); }
-        .layout-grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .layout-grid-4 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
-        .layout-grid-5,
-        .layout-grid-6 { grid-template-columns: repeat(3, 1fr); }
-        .layout-grid-7,
-        .layout-grid-8,
-        .layout-grid-9 { grid-template-columns: repeat(3, 1fr); }
+.btn-remove {
+    background: linear-gradient(135deg, #ff4757 0%, #e63946 100%);
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
 
-        .layout-side-by-side .stream-container {
-            width: 50%;
-            height: 100vh;
-            float: left;
-        }
+.btn-remove:hover {
+    background: linear-gradient(135deg, #e63946 0%, #d62839 100%);
+}
 
-        .layout-fade .stream-container {
-            position: absolute;
-            width: 100%;
-            height: 100vh;
-            opacity: 0;
-            transition: opacity 1s;
-        }
+.settings-section {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 24px;
+    margin-top: 24px;
+}
 
-        .layout-fade .stream-container.active {
-            opacity: 1;
-        }
+.settings-section h3 {
+    font-size: 1.1em;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
 
-        .layout-corner .stream-container:first-child {
-            position: absolute;
-            width: 100%;
-            height: 100vh;
-        }
+.setting-group {
+    margin-bottom: 20px;
+}
 
-        .layout-corner .stream-container:nth-child(2) {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            width: 400px;
-            height: 225px;
-            z-index: 10;
-            border: 2px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
+.setting-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9em;
+    color: #333;
+}
 
-        .stream-container {
-            background: #1a1a1a;
-            position: relative;
-        }
+.setting-group select,
+.setting-group input[type="color"] {
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95em;
+    background: #fafafa;
+    transition: all 0.3s;
+}
 
-        .stream-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+.setting-group select {
+    width: 100%;
+    cursor: pointer;
+}
 
-        .stream-offline {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1em;
-            height: 100%;
-            font-weight: 500;
-        }
+.setting-group select:focus {
+    outline: none;
+    border-color: #1a1a1a;
+    background: white;
+}
 
-        .settings-panel {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.95);
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 100;
-            max-width: 300px;
-            display: none;
-        }
+.setting-group input[type="color"] {
+    width: 80px;
+    height: 40px;
+    cursor: pointer;
+    border: 2px solid #e0e0e0;
+}
 
-        .settings-panel.show {
-            display: block;
-        }
+.setting-group input[type="color"]:hover {
+    border-color: #1a1a1a;
+}
 
-        .settings-toggle {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.95);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 99;
-            font-weight: 500;
-        }
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
-            }
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
 
-            .card {
-                padding: 24px 20px;
-            }
+.color-inputs {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
 
-            .layout-corner .stream-container:nth-child(2) {
-                width: 200px;
-                height: 113px;
-            }
-        }
+/* Terminal Animation */
+.generated-link {
+    margin-top: 24px;
+    padding: 24px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    display: none;
+    animation: fadeInUp 0.5s ease;
+}
+
+.generated-link.show {
+    display: block;
+}
+
+.terminal-animation {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.terminal-header {
+    background: #2d2d2d;
+    padding: 8px 12px;
+    display: flex;
+    gap: 6px;
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-dot.red { background: #ff5f56; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #27c93f; }
+
+.terminal-body {
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.terminal-line {
+    color: #00ff00;
+}
+
+.terminal-prompt {
+    color: #0080ff;
+    margin-right: 8px;
+}
+
+.terminal-text {
+    color: #00ff00;
+}
+
+.terminal-cursor {
+    color: #00ff00;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.generated-link label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.generated-link input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9em;
+    margin-bottom: 12px;
+    background: white;
+    font-family: monospace;
+}
+
+.copy-btn {
+    background: white;
+    color: #1a1a1a;
+    border: 2px solid #1a1a1a;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-btn:hover {
+    background: #1a1a1a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.footer {
+    text-align: center;
+    padding: 24px;
+    color: #666;
+    font-size: 0.95em;
+    border-top: 1px solid #e0e0e0;
+    background: white;
+    transition: opacity 0.3s;
+}
+
+.footer.hidden {
+    display: none;
+}
+
+/* Viewer Styles */
+.viewer-body {
+    margin: 0;
+    padding: 0;
+}
+
+.streams-grid {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    gap: 0;
+    position: relative;
+}
+
+.layout-grid-1 { grid-template-columns: 1fr; }
+.layout-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.layout-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.layout-grid-4 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+.layout-grid-5,
+.layout-grid-6 { grid-template-columns: repeat(3, 1fr); }
+.layout-grid-7,
+.layout-grid-8,
+.layout-grid-9 { grid-template-columns: repeat(3, 1fr); }
+
+.layout-side-by-side .stream-container {
+    width: 50%;
+    height: 100vh;
+    float: left;
+}
+
+.layout-fade .stream-container {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.layout-fade .stream-container.active {
+    opacity: 1;
+}
+
+.layout-corner .stream-container:first-child {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+}
+
+.layout-corner .stream-container:nth-child(2) {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 400px;
+    height: 225px;
+    z-index: 10;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.stream-container {
+    background: #1a1a1a;
+    position: relative;
+}
+
+.stream-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.stream-offline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1em;
+    height: 100%;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+    }
+
+    .card {
+        padding: 24px 20px;
+    }
+
+    .layout-corner .stream-container:nth-child(2) {
+        width: 200px;
+        height: 113px;
+    }
+    
+    .input-row {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="logo-container">
+                <svg class="logo" viewBox="0 0 100 100" width="80" height="80">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="4"/>
+                    <path d="M 30 50 L 45 35 L 45 50 L 60 35 L 60 65 L 45 50 L 45 65 Z" fill="url(#gradient)"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#9147ff;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#ff0000;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#53fc18;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h2 class="loading-title">Multi-Stream Viewer</h2>
+            <div class="loading-bar">
+                <div class="loading-progress" id="loadingProgress"></div>
+            </div>
+            <p class="loading-text" id="loadingText">Đang tải...</p>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header" id="header">
+            <div class="logo-header">
+                <svg class="logo-small" viewBox="0 0 100 100" width="40" height="40">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#gradientHeader)" stroke-width="4"/>
+                    <path d="M 30 50 L 45 35 L 45 50 L 60 35 L 60 65 L 45 50 L 45 65 Z" fill="url(#gradientHeader)"/>
+                    <defs>
+                        <linearGradient id="gradientHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#9147ff;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#ff0000;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#53fc18;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
             <h1>Multi-Stream Viewer</h1>
             <p>Xem tối đa 9 livestream cùng lúc</p>
         </div>
@@ -422,7 +677,7 @@
             
             <div class="input-row">
                 <input type="text" id="streamInput" placeholder="Nhập link Twitch/YouTube/Kick">
-                <button class="btn" onclick="addStream()">Thêm</button>
+                <button class="btn" onclick="app.addStream()">Thêm</button>
             </div>
 
             <div class="stream-list" id="streamList">
@@ -443,16 +698,24 @@
                 </div>
 
                 <div class="setting-group">
+                    <label>Chế độ nền</label>
+                    <select id="bgMode">
+                        <option value="solid">Màu đơn</option>
+                        <option value="twitch">Gradient Twitch (Tím)</option>
+                        <option value="youtube">Gradient YouTube (Đỏ)</option>
+                        <option value="kick">Gradient Kick (Xanh lá)</option>
+                        <option value="custom">Tùy chỉnh</option>
+                    </select>
+                </div>
+
+                <div class="setting-group" id="solidColorGroup">
                     <label>Màu nền</label>
                     <input type="color" id="bgColor" value="#f5f5f5">
                 </div>
 
-                <div class="setting-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="gradientBg">
-                        <label style="margin: 0;">Gradient chạy liên tục</label>
-                    </div>
-                    <div class="color-inputs" id="gradientColors" style="display: none; margin-top: 10px;">
+                <div class="setting-group" id="customGradientGroup" style="display: none;">
+                    <label>Màu gradient tùy chỉnh</label>
+                    <div class="color-inputs">
                         <input type="color" id="gradientColor1" value="#667eea">
                         <input type="color" id="gradientColor2" value="#764ba2">
                     </div>
@@ -473,12 +736,30 @@
                 </div>
             </div>
 
-            <button class="btn" onclick="generateLink()" style="margin-top: 20px;">Tạo Link Xem</button>
+            <button class="btn" onclick="app.generateLink()" style="margin-top: 20px;">
+                <span class="btn-icon">⚡</span> Tạo Link Xem
+            </button>
 
             <div class="generated-link" id="generatedLink">
+                <div class="terminal-animation" id="terminalAnimation">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">
+                            <span class="terminal-prompt">$</span>
+                            <span class="terminal-text" id="terminalText"></span>
+                            <span class="terminal-cursor">_</span>
+                        </div>
+                    </div>
+                </div>
                 <label>Link xem của bạn:</label>
                 <input type="text" id="viewerLink" readonly>
-                <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+                <button class="copy-btn" onclick="app.copyLink()">
+                    <span>📋</span> Copy Link
+                </button>
             </div>
         </div>
 
@@ -492,142 +773,233 @@
     </div>
 
     <script>
-        let streams = [];
-
-        // Gradient checkbox handler
-        document.getElementById('gradientBg').addEventListener('change', function(e) {
-            document.getElementById('gradientColors').style.display = e.target.checked ? 'flex' : 'none';
+// app.js
+const app = {
+    streams: [],
+    
+    init() {
+        this.setupEventListeners();
+        this.checkViewerMode();
+        this.renderStreamList();
+        this.hideLoading();
+    },
+    
+    hideLoading() {
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+        }, 2100);
+    },
+    
+    setupEventListeners() {
+        // Background mode change
+        document.getElementById('bgMode').addEventListener('change', (e) => {
+            const value = e.target.value;
+            document.getElementById('solidColorGroup').style.display = 
+                value === 'solid' ? 'block' : 'none';
+            document.getElementById('customGradientGroup').style.display = 
+                value === 'custom' ? 'block' : 'none';
         });
-
-        function extractStreamInfo(url) {
-            if (!url) return null;
-
-            // Twitch
-            if (url.includes('twitch.tv')) {
-                const match = url.match(/twitch\.tv\/([^\/\?]+)/);
-                if (match) return { platform: 'twitch', channel: match[1], url: url };
+        
+        // Enter key on input
+        document.getElementById('streamInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.addStream();
             }
+        });
+    },
+    
+    extractStreamInfo(url) {
+        if (!url) return null;
 
-            // YouTube
-            if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                let videoId = null;
-                if (url.includes('watch?v=')) {
-                    videoId = url.split('watch?v=')[1].split('&')[0];
-                } else if (url.includes('youtu.be/')) {
-                    videoId = url.split('youtu.be/')[1].split('?')[0];
-                } else if (url.includes('/live/')) {
-                    videoId = url.split('/live/')[1].split('?')[0];
-                }
-                if (videoId) return { platform: 'youtube', videoId: videoId, url: url };
-            }
-
-            // Kick
-            if (url.includes('kick.com')) {
-                const match = url.match(/kick\.com\/([^\/\?]+)/);
-                if (match) return { platform: 'kick', channel: match[1], url: url };
-            }
-
-            return null;
+        // Twitch
+        if (url.includes('twitch.tv')) {
+            const match = url.match(/twitch\.tv\/([^\/\?]+)/);
+            if (match) return { platform: 'twitch', channel: match[1], url: url };
         }
 
-        function addStream() {
-            const input = document.getElementById('streamInput');
-            const url = input.value.trim();
-            
-            if (!url) {
-                alert('Vui lòng nhập link stream!');
-                return;
+        // YouTube
+        if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            let videoId = null;
+            if (url.includes('watch?v=')) {
+                videoId = url.split('watch?v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('/live/')) {
+                videoId = url.split('/live/')[1].split('?')[0];
             }
-
-            if (streams.length >= 9) {
-                alert('Tối đa 9 stream!');
-                return;
-            }
-
-            const info = extractStreamInfo(url);
-            if (!info) {
-                alert('Link không hợp lệ! Vui lòng nhập link Twitch, YouTube hoặc Kick.');
-                return;
-            }
-
-            streams.push(info);
-            input.value = '';
-            renderStreamList();
+            if (videoId) return { platform: 'youtube', videoId: videoId, url: url };
         }
 
-        function removeStream(index) {
-            streams.splice(index, 1);
-            renderStreamList();
+        // Kick
+        if (url.includes('kick.com')) {
+            const match = url.match(/kick\.com\/([^\/\?]+)/);
+            if (match) return { platform: 'kick', channel: match[1], url: url };
         }
 
-        function renderStreamList() {
-            const list = document.getElementById('streamList');
-            if (streams.length === 0) {
-                list.innerHTML = '<p style="color: #999; font-size: 0.9em;">Chưa có stream nào. Thêm link để bắt đầu.</p>';
-                return;
-            }
+        return null;
+    },
+    
+    addStream() {
+        const input = document.getElementById('streamInput');
+        const url = input.value.trim();
+        
+        if (!url) {
+            alert('Vui lòng nhập link stream!');
+            return;
+        }
 
-            list.innerHTML = streams.map((stream, index) => `
-                <div class="stream-item">
-                    <div class="stream-item-info">
-                        ${index + 1}. ${stream.platform.toUpperCase()} - ${stream.channel || stream.videoId}
-                    </div>
-                    <div class="stream-item-actions">
-                        <button class="btn btn-small btn-remove" onclick="removeStream(${index})">Xóa</button>
-                    </div>
+        if (this.streams.length >= 9) {
+            alert('Tối đa 9 stream!');
+            return;
+        }
+
+        const info = this.extractStreamInfo(url);
+        if (!info) {
+            alert('Link không hợp lệ! Vui lòng nhập link Twitch, YouTube hoặc Kick.');
+            return;
+        }
+
+        this.streams.push(info);
+        input.value = '';
+        this.renderStreamList();
+    },
+    
+    removeStream(index) {
+        this.streams.splice(index, 1);
+        this.renderStreamList();
+    },
+    
+    renderStreamList() {
+        const list = document.getElementById('streamList');
+        if (this.streams.length === 0) {
+            list.innerHTML = '<p style="color: #999; font-size: 0.9em; padding: 20px; text-align: center;">Chưa có stream nào. Thêm link để bắt đầu.</p>';
+            return;
+        }
+
+        list.innerHTML = this.streams.map((stream, index) => `
+            <div class="stream-item">
+                <div class="stream-item-info">
+                    ${index + 1}. ${stream.platform.toUpperCase()} - ${stream.channel || stream.videoId}
                 </div>
-            `).join('');
-        }
-
-        function generateLink() {
-            if (streams.length === 0) {
-                alert('Vui lòng thêm ít nhất 1 stream!');
-                return;
+                <div class="stream-item-actions">
+                    <button class="btn btn-small btn-remove" onclick="app.removeStream(${index})">Xóa</button>
+                </div>
+            </div>
+        `).join('');
+    },
+    
+    async animateTerminal() {
+        const terminalText = document.getElementById('terminalText');
+        const messages = [
+            'Đang khởi tạo...',
+            'Xử lý cấu hình...',
+            'Tạo link xem...',
+            '✓ Hoàn thành!'
+        ];
+        
+        for (let msg of messages) {
+            terminalText.textContent = '';
+            for (let i = 0; i < msg.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, 30));
+                terminalText.textContent += msg[i];
             }
-
-            const settings = {
-                streams: streams,
-                layout: document.getElementById('layoutType').value,
-                bgColor: document.getElementById('bgColor').value,
-                gradient: document.getElementById('gradientBg').checked,
-                gradientColor1: document.getElementById('gradientColor1').value,
-                gradientColor2: document.getElementById('gradientColor2').value,
-                hideHeader: document.getElementById('hideHeader').checked,
-                hideFooter: document.getElementById('hideFooter').checked
-            };
-
-            const encodedData = btoa(JSON.stringify(settings));
-            const viewerUrl = `${window.location.origin}${window.location.pathname}?view=${encodedData}`;
-            
-            document.getElementById('viewerLink').value = viewerUrl;
-            document.getElementById('generatedLink').classList.add('show');
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+    },
+    
+    async generateLink() {
+        if (this.streams.length === 0) {
+            alert('Vui lòng thêm ít nhất 1 stream!');
+            return;
         }
 
-        function copyLink() {
-            const linkInput = document.getElementById('viewerLink');
-            linkInput.select();
-            document.execCommand('copy');
-            
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = '✓ Đã copy!';
-            setTimeout(() => {
-                btn.textContent = originalText;
-            }, 2000);
-        }
+        const bgMode = document.getElementById('bgMode').value;
+        const settings = {
+            streams: this.streams,
+            layout: document.getElementById('layoutType').value,
+            bgMode: bgMode,
+            bgColor: document.getElementById('bgColor').value,
+            gradientColor1: document.getElementById('gradientColor1').value,
+            gradientColor2: document.getElementById('gradientColor2').value,
+            hideHeader: document.getElementById('hideHeader').checked,
+            hideFooter: document.getElementById('hideFooter').checked
+        };
 
-        function createStreamEmbed(streamInfo) {
-            if (streamInfo.platform === 'twitch') {
-                return `<iframe src="https://player.twitch.tv/?channel=${streamInfo.channel}&parent=${window.location.hostname}&muted=true" allowfullscreen></iframe>`;
-            } else if (streamInfo.platform === 'youtube') {
-                return `<iframe src="https://www.youtube.com/embed/${streamInfo.videoId}?autoplay=1&mute=1" allowfullscreen></iframe>`;
-            } else if (streamInfo.platform === 'kick') {
-                return `<iframe src="https://player.kick.com/${streamInfo.channel}" allowfullscreen></iframe>`;
-            }
-            return '<div class="stream-offline">Stream đang offline</div>';
+        const encodedData = btoa(JSON.stringify(settings));
+        const viewerUrl = `${window.location.origin}${window.location.pathname}?view=${encodedData}`;
+        
+        // Show and animate terminal
+        const generatedLink = document.getElementById('generatedLink');
+        generatedLink.classList.add('show');
+        
+        await this.animateTerminal();
+        
+        document.getElementById('viewerLink').value = viewerUrl;
+        
+        // Scroll to result
+        generatedLink.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    },
+    
+    copyLink() {
+        const linkInput = document.getElementById('viewerLink');
+        linkInput.select();
+        document.execCommand('copy');
+        
+        const btn = event.target.closest('.copy-btn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<span>✓</span> Đã copy!';
+        btn.style.background = '#27c93f';
+        btn.style.color = 'white';
+        btn.style.borderColor = '#27c93f';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+            btn.style.color = '';
+            btn.style.borderColor = '';
+        }, 2000);
+    },
+    
+    createStreamEmbed(streamInfo) {
+        if (streamInfo.platform === 'twitch') {
+            return `<iframe src="https://player.twitch.tv/?channel=${streamInfo.channel}&parent=${window.location.hostname}&muted=true" allowfullscreen></iframe>`;
+        } else if (streamInfo.platform === 'youtube') {
+            return `<iframe src="https://www.youtube.com/embed/${streamInfo.videoId}?autoplay=1&mute=1" allowfullscreen></iframe>`;
+        } else if (streamInfo.platform === 'kick') {
+            return `<iframe src="https://player.kick.com/${streamInfo.channel}" allowfullscreen></iframe>`;
         }
-
-        // Check if we're in viewer mode
+        return '<div class="stream-offline">Stream đang offline</div>';
+    },
+    
+    applyBackground(settings) {
+        const body = document.body;
+        body.className = '';
+        
+        switch(settings.bgMode) {
+            case 'twitch':
+                body.classList.add('gradient-twitch');
+                break;
+            case 'youtube':
+                body.classList.add('gradient-youtube');
+                break;
+            case 'kick':
+                body.classList.add('gradient-kick');
+                break;
+            case 'custom':
+                body.style.background = `linear-gradient(135deg, ${settings.gradientColor1} 0%, ${settings.gradientColor2} 100%)`;
+                body.classList.add('gradient-custom');
+                break;
+            case 'solid':
+            default:
+                body.style.background = settings.bgColor;
+                break;
+        }
+    },
+    
+    checkViewerMode() {
         const urlParams = new URLSearchParams(window.location.search);
         const viewParam = urlParams.get('view');
 
@@ -647,13 +1019,7 @@
                     document.getElementById('footer').classList.add('hidden');
                 }
 
-                if (settings.gradient) {
-                    document.body.style.background = `linear-gradient(135deg, ${settings.gradientColor1}, ${settings.gradientColor2})`;
-                    document.body.classList.add('gradient-bg');
-                } else {
-                    document.body.style.background = settings.bgColor;
-                }
-                document.body.classList.add('custom-bg');
+                this.applyBackground(settings);
 
                 // Create viewer
                 const viewerPage = document.getElementById('viewerPage');
@@ -671,7 +1037,7 @@
                     if (settings.layout === 'fade') {
                         container.classList.add(index === 0 ? 'active' : '');
                     }
-                    container.innerHTML = createStreamEmbed(stream);
+                    container.innerHTML = this.createStreamEmbed(stream);
                     grid.appendChild(container);
                 });
 
@@ -685,7 +1051,7 @@
                         containers[currentIndex].classList.remove('active');
                         currentIndex = (currentIndex + 1) % containers.length;
                         containers[currentIndex].classList.add('active');
-                    }, 10000); // Change every 10 seconds
+                    }, 10000);
                 }
 
                 document.querySelector('.container').style.padding = '0';
@@ -694,16 +1060,16 @@
             } catch (e) {
                 alert('Lỗi: Link không hợp lệ');
             }
-        } else {
-            renderStreamList();
         }
+    }
+};
 
-        // Enter key handler
-        document.getElementById('streamInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addStream();
-            }
-        });
+// Initialize app when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => app.init());
+} else {
+    app.init();
+}
     </script>
 </body>
     </html>
